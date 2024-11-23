@@ -4,6 +4,22 @@ format: html
 editor: visual
 ---
 
+# Basic Modeling Practise
+
+## Data introduction
+
+Today we are using a bike share data for the basic modeling practise. The introoduction of this data set is accessed through this website: (Seoul Bike Sharing Demand - UCI Machine Learning Repository). To our relieve there is no missing values.
+
+The aim of the project is to predict the rental bike count at each hour of a day based on the weather condition, season, holiday and the hour. Since bike usage is sensitive to weather condition it is presumable that certain weather condition, plus the day condition (weekday/weekend, holiday, etc.) is likely to dictate the bike usage in a particular time of the day.
+
+Let's load some packages and read in the data first:
+
+```{r}
+library (tidyverse)
+library (dplyr)
+Bikeshare <- read.csv ("C:\\NCSU\\Statistics\\ST558\\2024\\ST558_HW8\\data\\SeoulBikeData.csv")
+```
+
 ## Quarto
 
 Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
