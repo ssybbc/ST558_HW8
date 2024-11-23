@@ -17,8 +17,11 @@ Let's load some packages and read in the data first:
 ```{r}
 library (tidyverse)
 library (dplyr)
-Bikeshare <- read.csv ("C:\\NCSU\\Statistics\\ST558\\2024\\ST558_HW8\\data\\SeoulBikeData.csv")
+Bikeshare <- read_csv ("data//SeoulBikeData.csv")
+
 ```
+
+Unexpectedly the first trial to read in data failed. It turned out the file contains some special character that the R does not understand/not encoded by the R-recognizable way. After changing the format manually everything is fine.
 
 ## Quarto
 
