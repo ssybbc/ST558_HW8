@@ -136,3 +136,35 @@ grid.arrange(rentalcount,rainfall,snowfall,Temperature,Humidity,windspeed,visibi
 It is interesting to see the rough bi-modal distribution of rented bike count. neither **mean** nor **median** fall on either peak. Probably it is just good and bad weather conditions that is driving this division.
 
 In order to assist data modeling, not only we are interested in which variable contributes the most to the changes of bike rental count, but also we wanted to figure out the correlation among different predictors. Thus we would use corr plot to visualize the relationship
+
+```{r}
+library (corrplot)
+cor_matrix <- cor(Bikesharenew |> select (-DateF))  # Compute correlation matrix
+corrplot(cor_matrix, method = "circle", type = "upper", tl.cex = 0.8)
+```
+
+From this correlation plot it is easy to see the daily number of checked out bike is highly positively correlated with the daily temperature, dewpoint and solar radiation. However since both dewpoint and solar radiation are highly correlated with the temperature themselves, we will wait to see whether we should include them all. On the contrary, daily rainfall, snowfall or windspeed is negatively associated with bike count. But remember the distribution of those three variable is far from normal distribution, so maybe it would help to transform the three variables into categorical variables to better model the bike rental count.
+
+## Split the data
+
+Now we could model our data Bikesharenew. First let's split them using seasons to stratify. However we missed the categorical variables in the original data set. Let's fix this first!
+
+```{r}
+Bikesharenew2 <- left_join(Bikesharenew, select (Bikeshare,DateF,SeasonsF,HolidayF), by = join_by(DateF))
+
+```
+
+Now it's all good and we could proceed with splitting the data.
+
+```{r}
+library (tidymodels)
+
+Bikesharesplit <- initial_split (Bikesharenew2, prop = 0.75, strata = SeasonsF)
+```
+
+Now create a 10-fold CV on training set.
+
+```{r}
+bikesharetrain <- training (Bikesharesplit)
+bikeshare_10_fold <- vfold_cv(bikesharetrain,10)
+```
