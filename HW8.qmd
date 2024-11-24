@@ -22,7 +22,11 @@ Bikeshare
 
 ```
 
-Unexpectedly the first trial to read in data failed. It turned out the file contains some special character that the R does not understand/not encoded by the R-recognizable way. After changing the format manually everything is fine. We first transform the date to the date format
+Unexpectedly the first trial to read in data failed. It turned out the file contains some special character that the R does not understand/not encoded by the R-recognizable way.
+
+## Data Cleaning
+
+After changing the format manually everything is fine. We first transform the date to the date format
 
 ```{r}
 Bikeshare$Date <- as.Date (Bikeshare$Date, format = "%d/%m/%Y")
@@ -33,8 +37,102 @@ Now the date are in the right form and can do some visualization around the time
 ```{r}
 colSums(is.na(Bikeshare))
 length(unique(Bikeshare$Seasons))
+```
+
+Luckily for us, there is no missing data in the data set. To check for the number of unique values in each character column, use the command table(), and if everything is right turn the character variables into factors.
+
+```{r}
 table(Bikeshare$Seasons)
+table (Bikeshare$Holiday)
+table (Bikeshare$`Functioning Day`)
+Bikeshare <- Bikeshare |> mutate (SeasonsF = as.factor (Seasons),
+                                  HolidayF = as.factor (Holiday)) |>
+  filter (`Functioning Day` == "Yes") |>
+  select (-Seasons, -Holiday, -`Functioning Day`)
+```
+
+We filtered the data so that all days recorded were "functional day" and factorized variables "Seasons" and "Holiday". Since we wanted to summarize across the hours to simplify the data (thus eliminating the need to adjust for the hour variable), we will hereby factorize date as well.
+
+```{r}
+Bikeshare <- Bikeshare |> mutate (DateF = as.factor (Date))
+```
+
+Now we are ready to do some EDA.
+
+## Exploratory data analysis
+
+Let's first do summary over some variables. We already counted the number of each unique factors of the categorical variables, we could summarize them as below. First let's take a look at the variables of the modified data set
+
+```{r}
+str (Bikeshare)
+```
+
+For the variable "Rented Bike Count", "Rainfall (mm)", "Snowfall (cm)", we would like to get summary data based on the **summed** value in a day (added up all the hour data). For other weather-related data, we would like to get a summary of the **mean** across all the hours in a day.
+
+```{r}
+rentalcount_precipitation_summary <-Bikeshare |> group_by(DateF) |>
+  summarize (across(c(`Rented Bike Count`,`Rainfall(mm)`,`Snowfall (cm)`),
+             .fns = list ("Daily" = sum)))
+summary(rentalcount_precipitation_summary)
+
+weather_summary <- Bikeshare |> group_by(DateF) |>
+  summarize (across (c(`Temperature(C)`, `Humidity(%)`,`Wind speed (m/s)`,`Visibility (10m)`,`Dew point temperature(C)`,`Solar Radiation (MJ/m2)`),
+                     .fns = list ("Daily" = mean)))
+summary (weather_summary)
 
 ```
 
-To check for the number of unique values in each character column, use the command table(),
+We could combine the two data set into one.
+
+```{r}
+Bikesharenew <- left_join(rentalcount_precipitation_summary,
+                          weather_summary)
+str(Bikesharenew)
+```
+
+Based on the merged data set, we will do more work – To better visualize the distribution of variables, histogram seemed to be the choice.
+
+```{r}
+library (gridExtra)
+rentalcount <- ggplot (Bikesharenew, aes (x = `Rented Bike Count_Daily`)) +
+  geom_histogram(color = "black", fill = "red3", alpha = 0.5) +
+  labs (x = "Daily rented Bike Count")
+
+rainfall <- ggplot (Bikesharenew, aes (x = `Rainfall(mm)_Daily`)) +
+  geom_histogram(color = "black", fill = "lightgreen", alpha = 0.5) +
+  labs (x = "Daily rainfall (mm)")
+
+snowfall <- ggplot (Bikesharenew, aes (x = Bikesharenew$`Snowfall (cm)_Daily`)) +
+  geom_histogram(color = "brown", fill = "white", alpha = 0.5) +
+  labs (x = "Daily snowfall (cm)")
+
+Temperature <- ggplot (Bikesharenew, aes (x = Bikesharenew$`Temperature(C)_Daily`)) +
+  geom_histogram(color = "black", fill = "orange", alpha = 0.5) +
+  labs (x = "Daily avg Temp (oC)")
+
+Humidity <- ggplot (Bikesharenew, aes (x = Bikesharenew$`Humidity(%)_Daily`)) +
+  geom_histogram(color = "black", fill = "lightblue", alpha = 0.5) +
+  labs (x = "Daily avg Humidity (%)")
+
+windspeed <- ggplot (Bikesharenew, aes (x = Bikesharenew$`Wind speed (m/s)_Daily`)) +
+  geom_histogram(color = "lightblue4", fill = "pink", alpha = 0.5) +
+  labs (x = "Daily avg windspeed (m/s)")
+
+visibility <- ggplot (Bikesharenew, aes (x = Bikesharenew$`Visibility (10m)_Daily`)) +
+  geom_histogram(color = "lightblue", fill = "white", alpha = 0.5) +
+  labs (x = "Daily avg Visibility (10m)")
+
+dewpoint <- ggplot (Bikesharenew, aes (x = Bikesharenew$`Dew point temperature(C)_Daily`)) +
+  geom_histogram(color = "green", fill = "ivory", alpha = 0.5) +
+  labs (x = "Daily avg dew point temp (oC)")
+
+solar <- ggplot (Bikesharenew, aes (x = Bikesharenew$`Solar Radiation (MJ/m2)_Daily`)) +
+  geom_histogram(color = "red", fill = "orange2", alpha = 0.5) +
+  labs (x = "Daily avg solar radiation (MJ/m2)")
+
+grid.arrange(rentalcount,rainfall,snowfall,Temperature,Humidity,windspeed,visibility,dewpoint,solar, ncol = 3)
+```
+
+It is interesting to see the rough bi-modal distribution of rented bike count. neither **mean** nor **median** fall on either peak. Probably it is just good and bad weather conditions that is driving this division.
+
+In order to assist data modeling, not only we are interested in which variable contributes the most to the changes of bike rental count, but also we wanted to figure out the correlation among different predictors. Thus we would use corr plot to visualize the relationship
