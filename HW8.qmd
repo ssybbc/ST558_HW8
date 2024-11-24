@@ -18,28 +18,23 @@ Let's load some packages and read in the data first:
 library (tidyverse)
 library (dplyr)
 Bikeshare <- read_csv ("data//SeoulBikeData.csv")
+Bikeshare
 
 ```
 
-Unexpectedly the first trial to read in data failed. It turned out the file contains some special character that the R does not understand/not encoded by the R-recognizable way. After changing the format manually everything is fine.
-
-## Quarto
-
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
-
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+Unexpectedly the first trial to read in data failed. It turned out the file contains some special character that the R does not understand/not encoded by the R-recognizable way. After changing the format manually everything is fine. We first transform the date to the date format
 
 ```{r}
-1 + 1
+Bikeshare$Date <- as.Date (Bikeshare$Date, format = "%d/%m/%Y")
 ```
 
-You can add options to executable code like this
+Now the date are in the right form and can do some visualization around the time data, which we will work on that later. Missing values are creating a headache for exploratory data analysis, so we want to check for missingness, evaluate and take measures to eliminate the missing values.
 
 ```{r}
-#| echo: false
-2 * 2
+colSums(is.na(Bikeshare))
+length(unique(Bikeshare$Seasons))
+table(Bikeshare$Seasons)
+
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+To check for the number of unique values in each character column, use the command table(),
