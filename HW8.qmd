@@ -70,12 +70,12 @@ str (Bikeshare)
 For the variable "Rented Bike Count", "Rainfall (mm)", "Snowfall (cm)", we would like to get summary data based on the **summed** value in a day (added up all the hour data). For other weather-related data, we would like to get a summary of the **mean** across all the hours in a day.
 
 ```{r}
-rentalcount_precipitation_summary <-Bikeshare |> group_by(DateF) |>
+rentalcount_precipitation_summary <-Bikeshare |> group_by(Date) |>
   summarize (across(c(`Rented Bike Count`,`Rainfall(mm)`,`Snowfall (cm)`),
              .fns = list ("Daily" = sum)))
 summary(rentalcount_precipitation_summary)
 
-weather_summary <- Bikeshare |> group_by(DateF) |>
+weather_summary <- Bikeshare |> group_by(Date) |>
   summarize (across (c(`Temperature(C)`, `Humidity(%)`,`Wind speed (m/s)`,`Visibility (10m)`,`Dew point temperature(C)`,`Solar Radiation (MJ/m2)`),
                      .fns = list ("Daily" = mean)))
 summary (weather_summary)
@@ -139,7 +139,7 @@ In order to assist data modeling, not only we are interested in which variable c
 
 ```{r}
 library (corrplot)
-cor_matrix <- cor(Bikesharenew |> select (-DateF))  # Compute correlation matrix
+cor_matrix <- cor(Bikesharenew |> select (-Date))  # Compute correlation matrix
 corrplot(cor_matrix, method = "circle", type = "upper", tl.cex = 0.8)
 ```
 
@@ -150,15 +150,27 @@ From this correlation plot it is easy to see the daily number of checked out bik
 Now we could model our data Bikesharenew. First let's split them using seasons to stratify. However we missed the categorical variables in the original data set. Let's fix this first!
 
 ```{r}
-Bikesharenew2 <- left_join(Bikesharenew, select (Bikeshare,DateF,SeasonsF,HolidayF), by = join_by(DateF))
+Bikeshare_cat <- Bikeshare |> select (Date, SeasonsF, HolidayF) |> unique()
+str (Bikeshare_cat)
+Bikesharenew2 <- left_join(Bikesharenew, Bikeshare_cat, by = join_by(Date))
+str (Bikesharenew2)
+```
 
+Here we inspect the column names for the **Bikesharenew2** data frame and found they could prove to be problematic. Change them now.
+
+```{r}
+newnames <- c ("Rainfall_daily", "Snowfall_daily",
+               "TempC_daily", "Humidity_daily",
+               "Windspeed_daily", "Visibility_daily",
+               "DewtempC_daily", "solarrad_daily")
+colnames (Bikesharenew2) [3:10] <- newnames
+str (Bikesharenew2)
 ```
 
 Now it's all good and we could proceed with splitting the data.
 
 ```{r}
 library (tidymodels)
-
 Bikesharesplit <- initial_split (Bikesharenew2, prop = 0.75, strata = SeasonsF)
 ```
 
@@ -168,3 +180,109 @@ Now create a 10-fold CV on training set.
 bikesharetrain <- training (Bikesharesplit)
 bikeshare_10_fold <- vfold_cv(bikesharetrain,10)
 ```
+
+## MLR model fitting
+
+Now let's create three different recipe, with the first recipe only considering simple linear regression model. Use the recipe () and bake () to see if it works.
+
+```{r}
+recipe (`Rented Bike Count_Daily` ~., data = bikesharetrain) |>
+  step_date (Date, features = "dow") |>
+  step_mutate (Date_dow = as.character(Date_dow)) |>
+  step_mutate (Days = ifelse(Date_dow %in% c("Sat", "Sun"), "weekend", "weekday")) |>
+  step_mutate (Days = factor (Days, levels = c ("weekend", "weekdays"))) |>
+  step_normalize (all_numeric(),-all_outcomes()) |>
+  step_unknown (Days, new_level = "unknown days") |>
+  step_dummy (SeasonsF, HolidayF, Days) |>
+  prep (training = bikesharetrain) |>
+  bake (bikesharetrain)
+```
+
+Well, it seemed to work. Apply this to the first recipe.
+
+```{r}
+bikeshare_rec_1 <- recipe (`Rented Bike Count_Daily` ~., data = bikesharetrain) |>
+  step_date (Date, features = "dow") |>
+  step_mutate (Date_dow = as.character(Date_dow)) |>
+  step_mutate (Days = ifelse(Date_dow %in% c("Sat", "Sun"), "weekend", "weekday")) |>
+  step_mutate (Days = factor (Days, levels = c ("weekend", "weekdays"))) |>
+  step_normalize (all_numeric(),-all_outcomes()) |>
+  step_unknown (Days, new_level = "unknown days") |>
+  step_dummy (SeasonsF, HolidayF, Days)
+```
+
+Let's create the 2nd recipe, adding several interactions while keeping most of the recipe unchanged.
+
+```{r}
+recipe (`Rented Bike Count_Daily` ~., data = bikesharetrain) |>
+  step_date (Date, features = "dow") |>
+  step_mutate (Date_dow = as.character(Date_dow)) |>
+  step_mutate (Days = ifelse(Date_dow %in% c("Sat", "Sun"), "weekend", "weekday")) |>
+  step_mutate (Days = factor (Days, levels = c ("weekend", "weekdays"))) |>
+  step_normalize (all_numeric(),-all_outcomes()) |>
+  step_unknown (Days, new_level = "unknown days") |>
+  step_dummy (SeasonsF, HolidayF, Days) |>
+  step_interact (terms = ~ starts_with ("Season") * HolidayF_No.Holiday + 
+                          starts_with("Season") * TempC_daily +
+                  TempC_daily * Rainfall_daily) |>
+  prep (training = bikesharetrain) |>
+  bake (bikesharetrain)
+```
+
+```{r}
+bikeshare_rec_2 <- recipe (`Rented Bike Count_Daily` ~., data = bikesharetrain) |>
+  step_date (Date, features = "dow") |>
+  step_mutate (Date_dow = as.character(Date_dow)) |>
+  step_mutate (Days = ifelse(Date_dow %in% c("Sat", "Sun"), "weekend", "weekday")) |>
+  step_mutate (Days = factor (Days, levels = c ("weekend", "weekdays"))) |>
+  step_normalize (all_numeric(),-all_outcomes()) |>
+  step_unknown (Days, new_level = "unknown") |>
+  step_dummy (SeasonsF, HolidayF, Days) |>
+  step_interact (terms = ~ starts_with ("Season") * HolidayF_No.Holiday + 
+                          starts_with("Season") * TempC_daily +
+                  TempC_daily * Rainfall_daily)
+```
+
+Proceed to add the 3rd recipe
+
+```{r}
+bikeshare_rec_3 <- recipe (`Rented Bike Count_Daily` ~., data = bikesharetrain) |>
+  step_date (Date, features = "dow") |>
+  step_mutate (Date_dow = as.character(Date_dow)) |>
+  step_mutate (Days = ifelse(Date_dow %in% c("Sat", "Sun"), "weekend", "weekday")) |>
+  step_mutate (Days = factor (Days, levels = c ("weekend", "weekdays"))) |>
+  step_normalize (all_numeric(),-all_outcomes()) |>
+  step_unknown (Days, new_level = "unknown") |>
+  step_dummy (SeasonsF, HolidayF, Days) |>
+  step_interact (terms = ~ starts_with ("Season") * HolidayF_No.Holiday + 
+                          starts_with("Season") * TempC_daily +
+                  TempC_daily * Rainfall_daily) |>
+  step_poly (Rainfall_daily, Snowfall_daily, Windspeed_daily, solarrad_daily)
+  
+```
+
+There was an error saying the *degree* of the polynomial needs to be smaller than the unique number of a variable, but according to my observation all numeric variable has more than two unique values. This I do not understand, but I manually chose some anyway.
+
+Now set up our linear model to the engine "lm"
+
+```{r}
+bikeshare_mod <- linear_reg() |> set_engine ("lm")
+bikeshare_wfl_1 <- workflow() |> add_recipe (bikeshare_rec_1) |> add_model (bikeshare_mod)
+bikeshare_wfl_2 <- workflow() |> add_recipe (bikeshare_rec_2) |> add_model (bikeshare_mod)
+bikeshare_wfl_3 <- workflow() |> add_recipe (bikeshare_rec_3) |> add_model (bikeshare_mod)
+```
+
+Now we are using the CV data to fit the three different models.
+
+```{r}
+bikeshare_cv_fit_1 <- bikeshare_wfl_1 |> fit_resamples (bikeshare_10_fold)
+bikeshare_cv_fit_2 <- bikeshare_wfl_2 |> fit_resamples (bikeshare_10_fold)
+bikeshare_cv_fit_3 <- bikeshare_wfl_3 |> fit_resamples (bikeshare_10_fold)
+
+rbind ((bikeshare_cv_fit_1 |> collect_metrics()),
+(bikeshare_cv_fit_2 |> collect_metrics()),
+(bikeshare_cv_fit_3 |> collect_metrics()))
+
+```
+
+Well, our data showed adding some interaction terms and polynomial terms indeed improved the model, as the mean RMSE reduced, but the value of RSQ did not reduce, meaning adding a lot of interaction term did not improve too much of our model. Since we already observed some linear relationship among several predictors, we could manually add some interaction partners.
