@@ -282,7 +282,13 @@ bikeshare_cv_fit_3 <- bikeshare_wfl_3 |> fit_resamples (bikeshare_10_fold)
 rbind ((bikeshare_cv_fit_1 |> collect_metrics()),
 (bikeshare_cv_fit_2 |> collect_metrics()),
 (bikeshare_cv_fit_3 |> collect_metrics()))
-
 ```
 
-Well, our data showed adding some interaction terms and polynomial terms indeed improved the model, as the mean RMSE reduced, but the value of RSQ did not reduce, meaning adding a lot of interaction term did not improve too much of our model. Since we already observed some linear relationship among several predictors, we could manually add some interaction partners.
+Well, our data showed adding some interaction terms and polynomial terms indeed improved the model, as the mean RMSE reduced, but the value of RSQ did not reduce, meaning adding a lot of interaction term did not improve too much of our model. Now fit the third model into our entire training set.
+
+```{r}
+MLR_final <- bikeshare_wfl_3 |> fit (bikesharetrain)
+tidy (MLR_final)
+```
+
+Judging from the p-value, the most significant beta is from the interaction between Season_Summer and TempC_daily, suggesting in summer days, increased temperature is likely to reduce the number of rented bike (Take note all numeric value were standardized here). Sundays are definitely unpopular days since being Sunday is predicted to reduce the number of rented bike by 3601 per day. As we may predict, summer days are much more popular than winter days to ride a bike, and rainfall is sure downpour people's enthusiasm to ride a bike as well.

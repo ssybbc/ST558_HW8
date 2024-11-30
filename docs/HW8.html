@@ -610,7 +610,7 @@ Attaching package: 'gridExtra'</code></pre>
 ✖ dplyr::lag()         masks stats::lag()
 ✖ yardstick::spec()    masks readr::spec()
 ✖ recipes::step()      masks stats::step()
-• Learn how to get started at https://www.tidymodels.org/start/</code></pre>
+• Dig deeper into tidy modeling with R at https://www.tmwr.org</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>Bikesharesplit <span class="ot">&lt;-</span> <span class="fu">initial_split</span> (Bikesharenew2, <span class="at">prop =</span> <span class="fl">0.75</span>, <span class="at">strata =</span> SeasonsF)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -638,16 +638,16 @@ Attaching package: 'gridExtra'</code></pre>
 <pre><code># A tibble: 263 × 17
    Date       Rainfall_daily Snowfall_daily TempC_daily Humidity_daily
    &lt;date&gt;              &lt;dbl&gt;          &lt;dbl&gt;       &lt;dbl&gt;          &lt;dbl&gt;
- 1 2018-09-03          2.67          -0.183       0.931          1.57 
- 2 2018-09-04         -0.316         -0.183       0.901          0.883
- 3 2018-09-05         -0.316         -0.183       0.951          0.245
- 4 2018-09-09         -0.316         -0.183       0.791         -0.556
- 5 2018-09-10         -0.316         -0.183       0.875         -0.515
- 6 2018-09-11         -0.316         -0.183       0.757         -0.653
- 7 2018-09-13         -0.316         -0.183       0.918          0.277
- 8 2018-09-15         -0.298         -0.183       0.898          1.16 
- 9 2018-09-16         -0.143         -0.183       0.823          1.62 
-10 2018-09-17         -0.307         -0.183       0.822          0.432
+ 1 2018-09-01         -0.323         -0.214       1.06           0.184
+ 2 2018-09-02         -0.323         -0.214       1.02          -0.268
+ 3 2018-09-03          2.68          -0.214       0.903          1.61 
+ 4 2018-09-04         -0.323         -0.214       0.873          0.890
+ 5 2018-09-05         -0.323         -0.214       0.922          0.224
+ 6 2018-09-06         -0.323         -0.214       0.957          0.834
+ 7 2018-09-07         -0.192         -0.214       0.780         -0.110
+ 8 2018-09-08         -0.323         -0.214       0.740         -0.666
+ 9 2018-09-09         -0.323         -0.214       0.763         -0.612
+10 2018-09-10         -0.323         -0.214       0.847         -0.570
 # ℹ 253 more rows
 # ℹ 12 more variables: Windspeed_daily &lt;dbl&gt;, Visibility_daily &lt;dbl&gt;,
 #   DewtempC_daily &lt;dbl&gt;, solarrad_daily &lt;dbl&gt;,
@@ -686,16 +686,16 @@ Attaching package: 'gridExtra'</code></pre>
 <pre><code># A tibble: 263 × 24
    Date       Rainfall_daily Snowfall_daily TempC_daily Humidity_daily
    &lt;date&gt;              &lt;dbl&gt;          &lt;dbl&gt;       &lt;dbl&gt;          &lt;dbl&gt;
- 1 2018-09-03          2.67          -0.183       0.931          1.57 
- 2 2018-09-04         -0.316         -0.183       0.901          0.883
- 3 2018-09-05         -0.316         -0.183       0.951          0.245
- 4 2018-09-09         -0.316         -0.183       0.791         -0.556
- 5 2018-09-10         -0.316         -0.183       0.875         -0.515
- 6 2018-09-11         -0.316         -0.183       0.757         -0.653
- 7 2018-09-13         -0.316         -0.183       0.918          0.277
- 8 2018-09-15         -0.298         -0.183       0.898          1.16 
- 9 2018-09-16         -0.143         -0.183       0.823          1.62 
-10 2018-09-17         -0.307         -0.183       0.822          0.432
+ 1 2018-09-01         -0.323         -0.214       1.06           0.184
+ 2 2018-09-02         -0.323         -0.214       1.02          -0.268
+ 3 2018-09-03          2.68          -0.214       0.903          1.61 
+ 4 2018-09-04         -0.323         -0.214       0.873          0.890
+ 5 2018-09-05         -0.323         -0.214       0.922          0.224
+ 6 2018-09-06         -0.323         -0.214       0.957          0.834
+ 7 2018-09-07         -0.192         -0.214       0.780         -0.110
+ 8 2018-09-08         -0.323         -0.214       0.740         -0.666
+ 9 2018-09-09         -0.323         -0.214       0.763         -0.612
+10 2018-09-10         -0.323         -0.214       0.847         -0.570
 # ℹ 253 more rows
 # ℹ 19 more variables: Windspeed_daily &lt;dbl&gt;, Visibility_daily &lt;dbl&gt;,
 #   DewtempC_daily &lt;dbl&gt;, solarrad_daily &lt;dbl&gt;,
@@ -751,7 +751,7 @@ Attaching package: 'gridExtra'</code></pre>
 <pre><code>There were issues with some computations   A: x1</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>There were issues with some computations   A: x9</code></pre>
+<pre><code>There were issues with some computations   A: x5</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>There were issues with some computations   A: x10</code></pre>
@@ -764,18 +764,7 @@ Attaching package: 'gridExtra'</code></pre>
 <pre><code>→ A | warning: prediction from rank-deficient fit; consider predict(., rankdeficient="NA")</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>There were issues with some computations   A: x10
-There were issues with some computations   A: x10</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code></code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a>bikeshare_cv_fit_3 <span class="ot">&lt;-</span> bikeshare_wfl_3 <span class="sc">|&gt;</span> <span class="fu">fit_resamples</span> (bikeshare_10_fold)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>→ A | warning: prediction from rank-deficient fit; consider predict(., rankdeficient="NA")</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>There were issues with some computations   A: x8</code></pre>
+<pre><code>There were issues with some computations   A: x5</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>There were issues with some computations   A: x10</code></pre>
@@ -783,22 +772,56 @@ There were issues with some computations   A: x10</code></pre>
 <div class="cell-output cell-output-stderr">
 <pre><code></code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb108"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb108-1"><a href="#cb108-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span> ((bikeshare_cv_fit_1 <span class="sc">|&gt;</span> <span class="fu">collect_metrics</span>()),</span>
-<span id="cb108-2"><a href="#cb108-2" aria-hidden="true" tabindex="-1"></a>(bikeshare_cv_fit_2 <span class="sc">|&gt;</span> <span class="fu">collect_metrics</span>()),</span>
-<span id="cb108-3"><a href="#cb108-3" aria-hidden="true" tabindex="-1"></a>(bikeshare_cv_fit_3 <span class="sc">|&gt;</span> <span class="fu">collect_metrics</span>()))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb104"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a>bikeshare_cv_fit_3 <span class="ot">&lt;-</span> bikeshare_wfl_3 <span class="sc">|&gt;</span> <span class="fu">fit_resamples</span> (bikeshare_10_fold)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>→ A | warning: prediction from rank-deficient fit; consider predict(., rankdeficient="NA")</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>There were issues with some computations   A: x4</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>There were issues with some computations   A: x10</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code></code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb109"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span> ((bikeshare_cv_fit_1 <span class="sc">|&gt;</span> <span class="fu">collect_metrics</span>()),</span>
+<span id="cb109-2"><a href="#cb109-2" aria-hidden="true" tabindex="-1"></a>(bikeshare_cv_fit_2 <span class="sc">|&gt;</span> <span class="fu">collect_metrics</span>()),</span>
+<span id="cb109-3"><a href="#cb109-3" aria-hidden="true" tabindex="-1"></a>(bikeshare_cv_fit_3 <span class="sc">|&gt;</span> <span class="fu">collect_metrics</span>()))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 6
   .metric .estimator     mean     n   std_err .config             
   &lt;chr&gt;   &lt;chr&gt;         &lt;dbl&gt; &lt;int&gt;     &lt;dbl&gt; &lt;chr&gt;               
-1 rmse    standard   4119.       10 220.      Preprocessor1_Model1
-2 rsq     standard      0.834    10   0.0200  Preprocessor1_Model1
-3 rmse    standard   2752.       10 129.      Preprocessor1_Model1
-4 rsq     standard      0.923    10   0.00672 Preprocessor1_Model1
-5 rmse    standard   2640.       10 109.      Preprocessor1_Model1
-6 rsq     standard      0.930    10   0.00561 Preprocessor1_Model1</code></pre>
+1 rmse    standard   4136.       10 236.      Preprocessor1_Model1
+2 rsq     standard      0.824    10   0.0188  Preprocessor1_Model1
+3 rmse    standard   3244.       10 240.      Preprocessor1_Model1
+4 rsq     standard      0.892    10   0.0134  Preprocessor1_Model1
+5 rmse    standard   3063.       10 183.      Preprocessor1_Model1
+6 rsq     standard      0.905    10   0.00994 Preprocessor1_Model1</code></pre>
 </div>
 </div>
-<p>Well, our data showed adding some interaction terms and polynomial terms indeed improved the model, as the mean RMSE reduced, but the value of RSQ did not reduce, meaning adding a lot of interaction term did not improve too much of our model. Since we already observed some linear relationship among several predictors, we could manually add some interaction partners.</p>
+<p>Well, our data showed adding some interaction terms and polynomial terms indeed improved the model, as the mean RMSE reduced, but the value of RSQ did not reduce, meaning adding a lot of interaction term did not improve too much of our model. Now fit the third model into our entire training set.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb111"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true" tabindex="-1"></a>MLR_final <span class="ot">&lt;-</span> bikeshare_wfl_3 <span class="sc">|&gt;</span> <span class="fu">fit</span> (bikesharetrain)</span>
+<span id="cb111-2"><a href="#cb111-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span> (MLR_final)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 33 × 5
+   term             estimate std.error statistic     p.value
+   &lt;chr&gt;               &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;
+ 1 (Intercept)      590688.  167427.       3.53  0.000504   
+ 2 Date                -32.1      9.40    -3.42  0.000750   
+ 3 TempC_daily       -2730.    3529.      -0.774 0.440      
+ 4 Humidity_daily    -2455.    1312.      -1.87  0.0626     
+ 5 Visibility_daily    129.     270.       0.477 0.634      
+ 6 DewtempC_daily     7488.    4000.       1.87  0.0624     
+ 7 Date_dowMon       -1839.     659.      -2.79  0.00570    
+ 8 Date_dowSat       -2541.     655.      -3.88  0.000135   
+ 9 Date_dowSun       -3481.     656.      -5.31  0.000000257
+10 Date_dowThu        -362.     627.      -0.577 0.565      
+# ℹ 23 more rows</code></pre>
+</div>
+</div>
+<p>Judging from the p-value, the most significant beta is from the interaction between Season_Summer and TempC_daily, suggesting in summer days, increased temperature is likely to reduce the number of rented bike (Take note all numeric value were standardized here). Sundays are definitely unpopular days since being Sunday is predicted to reduce the number of rented bike by 3601 per day. As we may predict, summer days are much more popular than winter days to ride a bike, and rainfall is sure downpour people’s enthusiasm to ride a bike as well.</p>
 
 
 </section>
